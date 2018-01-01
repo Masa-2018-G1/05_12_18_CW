@@ -14,18 +14,21 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private ProgressBar myProgress, horProgress;
-    private Button clickBtn;
-    private Handler handler;
+    private Button clickBtn, secondBtn;
+    private Handler handler, h1;
     private TextView resultTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         handler = new Handler(callback);
+        h1 = new Handler();
         myProgress = findViewById(R.id.myProgress);
         horProgress = findViewById(R.id.horProgress);
         resultTxt = findViewById(R.id.resultTxt);
         clickBtn = findViewById(R.id.clickBtn);
+        secondBtn = findViewById(R.id.secondBtn);
+        secondBtn.setOnClickListener(this);
         clickBtn.setOnClickListener(this);
     }
 
@@ -48,6 +51,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if(v.getId() == R.id.clickBtn){
             new Worker(handler).start();
+        }else if(v.getId() == R.id.secondBtn){
+            myProgress.setVisibility(View.VISIBLE);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            myProgress.setVisibility(View.INVISIBLE);
+//                        }
+//                    });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            myProgress.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
+            }).start();
         }
     }
 
